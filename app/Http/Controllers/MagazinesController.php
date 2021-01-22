@@ -83,7 +83,12 @@ class MagazinesController extends Controller
         $magazine->name = $request->name;
         $magazine->short_description = $request->short_description;
         $magazine->issue_date = $request->issue_date;
-        if($request->withoutImage === 'yes') $magazine->image = '';
+        if($request->withoutImage === 'yes') {
+            if(!empty($magazine->image) && Storage::disk('public')->exists($magazine->image)) {
+                Storage::disk('public')->deleteDirectory(dirname($magazine->image));
+            }
+            $magazine->image = '';
+        } 
         else if(!empty($request->image)) {
             if(!empty($magazine->image) && Storage::disk('public')->exists($magazine->image)) {
                 Storage::disk('public')->deleteDirectory(dirname($magazine->image));
